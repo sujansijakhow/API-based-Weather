@@ -26,8 +26,8 @@ type Props = {
 const Weather: React.FC<Props> = ({ data }) => {
   if (!data) return null; // Ensure no rendering before data is available
 
-  console.log("Weather Data:", data);
-  console.log("Icon Code:", data.weather?.[0]?.icon);
+  // console.log("Weather Data:", data);
+  // console.log("Icon Code:", data.weather?.[0]?.icon);
 
   return (
     <div className="relative flex flex-col justify-between max-w-[500px] w-full h-[90vh] m-auto p-4 text-gray-300 z-10">
