@@ -11,10 +11,16 @@ import Spinner from "@/components/Spinner";
 interface WeatherData {
   main: {
     temp: number;
+    feels_like: number;
+    humidity: number;
   };
   weather: {
-    description: string;
+    main: string;
+    icon: string;
   }[];
+  wind: {
+    speed: number;
+  };
   name: string;
 }
 
@@ -23,20 +29,21 @@ export default function Home() {
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(false);
 
+  const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=imperial&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}`;
+
   const fetchWeather = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=imperial&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}`;
       const response = await axios.get(url);
       setWeather(response.data);
     } catch (error) {
-      console.error("Error fetching weather data:", error);
+      console.error("Error fetching weather:", error);
+    } finally {
+      setLoading(false);
+      setCity('');
     }
-
-    setLoading(false);
-    setCity('');
   };
 
   if (loading) {
@@ -54,15 +61,16 @@ export default function Home() {
       <div className="absolute top-0 left-0 right-0 bottom-0 bg-black/40 z-[1]" />
 
       {/* Background */}
-      <Image src="/background.avif" alt="Background Image" layout="fill" />
+      <Image
+        src="/background.avif"
+        alt="Background Image"
+        layout="fill"
+      />
 
       {/* Search */}
       <div className="relative flex justify-between items-center max-w-[500px] w-full m-auto pt-4 text-white z-10">
-        <form
-          onSubmit={fetchWeather}
-          className="flex justify-between items-center w-full m-auto p-3 bg-transparent border border-black-300 text-white rounded-2xl"
-        >
-          <input
+        <form onSubmit={fetchWeather} className="flex justify-between items-center w-full m-auto p-3 bg-transparent border border-black-300 text-white rounded-2xl">
+          <input 
             onChange={(e) => setCity(e.target.value)}
             type="text"
             placeholder="Search City"
@@ -74,8 +82,8 @@ export default function Home() {
         </form>
       </div>
 
-      {/* Weather Display */}
-      {weather && <Weather data={weather} />}
+      {/* Weather Component */}
+      {weather !== null && <Weather data={weather} />}
     </div>
   );
 }
